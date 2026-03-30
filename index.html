@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clockwork Ops — Your systems, running like clockwork.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0b0d12;
+      --bg-2:        #10131a;
+      --bg-3:        #161921;
+      --bg-4:        #1c2030;
+      --border:      rgba(255,255,255,0.06);
+      --border-mid:  rgba(255,255,255,0.10);
+      --border-hi:   rgba(255,255,255,0.15);
+      --text:        #ededef;
+      --text-mid:    #8c90aa;
+      --text-dim:    #44485e;
+      --orange:      #F5A623;
+      --orange-lt:   #FFB84D;
+      --orange-glow: rgba(245,166,35,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND GRID ──────────────────────────────── */
+    .bg-grid {
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 72px 72px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ──────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 66px;
+      padding: 0 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(11,13,18,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 14px;
+      text-decoration: none;
+    }
+    .nav-logo img { height: 34px; width: auto; }
+    .nav-logo-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900; font-size: 22px; letter-spacing: 0.5px;
+      color: var(--text);
+    }
+    .nav-logo-text span { color: var(--orange); }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 38px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-mid); text-decoration: none;
+      font-size: 14px; font-weight: 500; letter-spacing: 0.2px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── BUTTONS ──────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      font-family: 'Barlow', sans-serif;
+      font-weight: 700; font-size: 14px; letter-spacing: 0.6px;
+      padding: 11px 24px;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-primary {
+      background: var(--orange); color: #0b0d12;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+    .btn-primary:hover {
+      background: var(--orange-lt);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(245,166,35,0.3);
+    }
+    .btn-lg {
+      font-size: 16px; padding: 16px 40px;
+      clip-path: polygon(14px 0%, 100% 0%, calc(100% - 14px) 100%, 0% 100%);
+    }
+
+    /* ── SHARED LAYOUT ────────────────────────────────── */
+    .section-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 52px;
+      position: relative; z-index: 1;
+    }
+
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 2.8px; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 18px;
+    }
+
+    /* ── HERO ─────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 480px;
+      align-items: center; gap: 80px;
+      padding: 66px 52px 0;
+      max-width: 1220px; margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+
+    .hero-content { padding-top: 32px; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 30px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 30px; height: 1px; background: var(--orange);
+    }
+
+    .hero h1 {
+      font-size: clamp(46px, 5.5vw, 72px);
+      font-weight: 900; line-height: 1.0;
+      letter-spacing: -2px; margin-bottom: 30px;
+    }
+    .hero h1 em { font-style: normal; color: var(--orange); }
+
+    .hero-body {
+      font-size: 18px; font-weight: 400;
+      color: var(--text-mid); line-height: 1.75;
+      max-width: 540px; margin-bottom: 48px;
+    }
+
+    .hero-cta {
+      display: flex; align-items: center; gap: 28px; flex-wrap: wrap;
+    }
+    .hero-trust {
+      font-size: 13px; color: var(--text-dim); letter-spacing: 0.3px;
+    }
+
+    /* hero photo */
+    .hero-visual { position: relative; }
+
+    .hero-photo-wrap {
+      position: relative; width: 100%; padding-top: 120%;
+    }
+    .hero-photo-wrap::before {
+      content: ''; position: absolute;
+      top: -3px; left: -3px; right: 24px; bottom: 24px;
+      border: 1px solid var(--orange); z-index: 0;
+    }
+    .hero-photo-wrap::after {
+      content: ''; position: absolute;
+      top: 24px; left: 24px; right: -3px; bottom: -3px;
+      border: 1px solid var(--border-mid); z-index: 0;
+    }
+    .hero-photo-inner {
+      position: absolute;
+      top: 10px; left: 10px; right: 14px; bottom: 14px;
+      background: var(--bg-3); overflow: hidden; z-index: 1;
+    }
+    .hero-photo-inner img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      filter: grayscale(15%);
+    }
+    .photo-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; color: var(--text-dim);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .photo-placeholder svg { opacity: 0.25; }
+
+    /* ── DIVIDER ──────────────────────────────────────── */
+    .divider {
+      border: none; height: 1px;
+      background: var(--border);
+      position: relative; z-index: 1;
+    }
+
+    /* ── PAIN SECTION ─────────────────────────────────── */
+    .pain-section {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 108px 0;
+      position: relative; z-index: 1;
+    }
+    .pain-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 96px; align-items: start;
+    }
+    .pain-headline {
+      font-size: clamp(34px, 3.8vw, 52px);
+      font-weight: 900; line-height: 1.08;
+      letter-spacing: -1.2px;
+    }
+    .pain-headline em { font-style: normal; color: var(--orange); }
+    .pain-sub {
+      font-size: 16px; color: var(--text-mid);
+      line-height: 1.7; margin-top: 20px;
+    }
+
+    .pain-list { list-style: none; }
+    .pain-list li {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 16px; color: var(--text-mid); line-height: 1.55;
+      transition: color 0.2s;
+    }
+    .pain-list li:first-child { border-top: 1px solid var(--border); }
+    .pain-list li:hover { color: var(--text); }
+    .pain-x {
+      flex-shrink: 0; margin-top: 1px;
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--text-dim);
+      color: var(--text-dim); font-size: 11px;
+    }
+
+    /* ── SERVICES ─────────────────────────────────────── */
+    .services-section {
+      padding: 108px 0;
+      position: relative; z-index: 1;
+    }
+    .services-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 64px;
+    }
+    .services-headline {
+      font-size: clamp(34px, 3.8vw, 52px);
+      font-weight: 900; line-height: 1.08; letter-spacing: -1.2px;
+    }
+    .services-desc {
+      max-width: 320px; text-align: right;
+      font-size: 15px; color: var(--text-mid); line-height: 1.65;
+    }
+
+    .services-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px; background: var(--border-mid);
+    }
+    .svc-card {
+      background: var(--bg);
+      padding: 48px 44px;
+      position: relative; overflow: hidden;
+      transition: background 0.25s;
+    }
+    .svc-card:hover { background: var(--bg-3); }
+    .svc-card:hover .svc-accent-line { width: 100%; }
+
+    .svc-accent-line {
+      position: absolute; top: 0; left: 0;
+      height: 2px; width: 0;
+      background: var(--orange);
+      transition: width 0.4s ease;
+    }
+    .svc-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      color: var(--text-dim); margin-bottom: 32px;
+    }
+    .svc-icon {
+      font-size: 28px; margin-bottom: 18px; display: block;
+    }
+    .svc-card h3 {
+      font-size: 20px; font-weight: 800;
+      letter-spacing: -0.3px; margin-bottom: 14px;
+    }
+    .svc-card p {
+      font-size: 15px; color: var(--text-mid); line-height: 1.68;
+    }
+
+    /* ── HOW IT WORKS ─────────────────────────────────── */
+    .how-section {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 108px 0;
+      position: relative; z-index: 1;
+    }
+    .how-header {
+      text-align: center; margin-bottom: 72px;
+    }
+    .how-headline {
+      font-size: clamp(34px, 3.8vw, 52px);
+      font-weight: 900; line-height: 1.08; letter-spacing: -1.2px;
+    }
+    .how-headline em { font-style: normal; color: var(--orange); }
+
+    .steps-wrap {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; background: var(--border-mid);
+    }
+    .step {
+      background: var(--bg-2); padding: 56px 44px;
+      position: relative;
+    }
+    .step-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 80px; font-weight: 900;
+      color: var(--bg-4); line-height: 1;
+      letter-spacing: -4px; margin-bottom: 28px;
+      user-select: none;
+    }
+    .step-title {
+      font-size: 22px; font-weight: 800;
+      letter-spacing: -0.3px; margin-bottom: 14px;
+    }
+    .step-title span { color: var(--orange); }
+    .step p { font-size: 15px; color: var(--text-mid); line-height: 1.68; }
+
+    /* ── ABOUT ────────────────────────────────────────── */
+    .about-section {
+      padding: 108px 0;
+      position: relative; z-index: 1;
+    }
+    .about-grid {
+      display: grid; grid-template-columns: 380px 1fr;
+      gap: 96px; align-items: center;
+    }
+    .about-photo {
+      width: 380px; height: 460px;
+      background: var(--bg-3); overflow: hidden;
+      position: relative;
+    }
+    .about-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center top;
+      filter: grayscale(15%);
+    }
+    .about-photo::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(transparent, rgba(11,13,18,0.4));
+    }
+    .about-name {
+      font-size: clamp(30px, 3vw, 44px);
+      font-weight: 900; letter-spacing: -0.8px; margin-bottom: 6px;
+    }
+    .about-role {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 36px;
+    }
+    .about-content p {
+      font-size: 17px; color: var(--text-mid);
+      line-height: 1.75; margin-bottom: 18px;
+    }
+    .about-content p:last-child { margin-bottom: 0; }
+
+    /* ── TESTIMONIALS ─────────────────────────────────── */
+    .testimonials-section {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 108px 0;
+      position: relative; z-index: 1;
+    }
+    .testimonials-header {
+      text-align: center; margin-bottom: 64px;
+    }
+    .testimonials-headline {
+      font-size: clamp(30px, 3vw, 44px);
+      font-weight: 900; letter-spacing: -0.8px;
+    }
+    .testimonials-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; background: var(--border-mid);
+    }
+    .testi-card {
+      background: var(--bg-2); padding: 44px 36px;
+      position: relative; overflow: hidden;
+    }
+    .testi-mark {
+      position: absolute; top: 16px; right: 24px;
+      font-size: 88px; line-height: 1; font-weight: 900;
+      color: var(--orange); opacity: 0.08;
+      pointer-events: none; user-select: none;
+    }
+    .testi-card blockquote {
+      font-size: 16px; color: var(--text-mid);
+      line-height: 1.72; font-style: italic;
+      margin-bottom: 32px;
+    }
+    .testi-author { display: flex; align-items: center; gap: 14px; }
+    .testi-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-4); border: 1px solid var(--border-mid);
+      flex-shrink: 0;
+    }
+    .testi-name { font-weight: 700; font-size: 15px; }
+    .testi-role { font-size: 13px; color: var(--text-dim); }
+
+    /* ── FINAL CTA ────────────────────────────────────── */
+    .cta-section {
+      padding: 128px 52px;
+      text-align: center;
+      position: relative; z-index: 1;
+      overflow: hidden;
+    }
+    .cta-glow {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, var(--orange-glow) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .cta-section .section-label { justify-content: center; }
+    .cta-headline {
+      font-size: clamp(40px, 5.5vw, 72px);
+      font-weight: 900; line-height: 1.02;
+      letter-spacing: -2px; margin-bottom: 20px;
+      position: relative;
+    }
+    .cta-headline em { font-style: normal; color: var(--orange); }
+    .cta-sub {
+      font-size: 18px; color: var(--text-mid);
+      margin-bottom: 52px; position: relative;
+    }
+    .cta-section .btn { position: relative; }
+    .cta-note {
+      margin-top: 22px; font-size: 13px; color: var(--text-dim);
+    }
+
+    /* ── FOOTER ───────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 52px;
+      display: flex; justify-content: space-between; align-items: center;
+      position: relative; z-index: 1;
+    }
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900; font-size: 18px;
+      color: var(--text-mid); letter-spacing: 0.5px;
+    }
+    .footer-logo span { color: var(--orange); }
+    .footer-copy { font-size: 13px; color: var(--text-dim); }
+
+    /* ── REVEAL ANIMATION ─────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-eyebrow  { animation: fadeUp 0.55s ease both; }
+    .hero h1       { animation: fadeUp 0.65s 0.10s ease both; }
+    .hero-body     { animation: fadeUp 0.65s 0.20s ease both; }
+    .hero-cta      { animation: fadeUp 0.65s 0.32s ease both; }
+    .hero-visual   { animation: fadeUp 0.75s 0.15s ease both; }
+
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ───────────────────────────────────── */
+    @media (max-width: 960px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 100px 24px 60px;
+        gap: 52px; text-align: center;
+      }
+      .hero-eyebrow { justify-content: center; }
+      .hero-body { max-width: 100%; }
+      .hero-cta { justify-content: center; }
+      .hero-visual { max-width: 320px; margin: 0 auto; }
+
+      .section-inner { padding: 0 24px; }
+
+      .pain-grid,
+      .about-grid { grid-template-columns: 1fr; gap: 52px; }
+      .about-photo { width: 100%; height: 320px; }
+
+      .services-header { flex-direction: column; gap: 20px; align-items: flex-start; }
+      .services-desc { text-align: left; max-width: 100%; }
+      .services-grid { grid-template-columns: 1fr; }
+
+      .steps-wrap { grid-template-columns: 1fr; }
+
+      .testimonials-grid { grid-template-columns: 1fr; }
+
+      .cta-section { padding: 88px 24px; }
+
+      footer { flex-direction: column; gap: 12px; text-align: center; padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- ── NAV ──────────────────────────────────────────── -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <!--
+        TO ADD YOUR LOGO:
+        Replace the text below with: <img src="clockwork-ops-logo.png" alt="Clockwork Ops">
+        and place your logo image in the same folder as this file.
+      -->
+      <span class="nav-logo-text">CLOCKWORK <span>OPS</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <a href="#contact" class="btn btn-primary">Book Free Call</a>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">Small Business Operations Consultant</div>
+      <h1>Save time.<br>Make more <em>money.</em><br>Run on autopilot.</h1>
+      <p class="hero-body">
+        I help small businesses set up the right systems and technology — so they can stop doing
+        things manually and focus on the work that actually grows their business.
+      </p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary btn-lg">Book Free 30-Min Call</a>
+        <span class="hero-trust">No pitch. No commitment.</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-inner">
+          <!--
+            TO ADD YOUR PHOTO:
+            Replace the placeholder div below with: <img src="your-photo.jpg" alt="Michael Green">
+            and place your photo in the same folder as this file.
+          -->
+          <div class="photo-placeholder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+            Your photo here
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PAIN POINTS ───────────────────────────────────── -->
+  <section class="pain-section">
+    <div class="section-inner">
+      <div class="pain-grid">
+        <div class="reveal">
+          <div class="section-label">Sound familiar?</div>
+          <h2 class="pain-headline">You're running<br>your business<br><em>manually.</em></h2>
+          <p class="pain-sub">
+            Most small business owners are stuck doing things on autopilot that could literally run on autopilot.
+            I figure out where you're losing time and money, then build the systems to fix it.
+          </p>
+        </div>
+        <div class="reveal">
+          <ul class="pain-list">
+            <li>
+              <span class="pain-x">✗</span>
+              Following up on leads by hand — or forgetting to follow up at all
+            </li>
+            <li>
+              <span class="pain-x">✗</span>
+              Spending hours every week on scheduling back-and-forth
+            </li>
+            <li>
+              <span class="pain-x">✗</span>
+              Leads slipping through the cracks while you're heads-down doing the actual work
+            </li>
+            <li>
+              <span class="pain-x">✗</span>
+              Copying the same information between tools that should talk to each other
+            </li>
+            <li>
+              <span class="pain-x">✗</span>
+              Writing the same email over and over instead of automating it once
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SERVICES ──────────────────────────────────────── -->
+  <section class="services-section" id="services">
+    <div class="section-inner">
+      <div class="services-header reveal">
+        <div>
+          <div class="section-label">What I Build</div>
+          <h2 class="services-headline">Systems that run<br>without you.</h2>
+        </div>
+        <p class="services-desc">
+          No jargon. No unnecessary complexity.
+          Just practical systems that work.
+        </p>
+      </div>
+      <div class="services-grid">
+        <div class="svc-card reveal">
+          <div class="svc-accent-line"></div>
+          <div class="svc-num">01</div>
+          <span class="svc-icon">⚙️</span>
+          <h3>CRM Setup & Automation</h3>
+          <p>Your contacts, pipeline, and follow-up sequences working together. No more spreadsheets. No more lost leads. Your CRM set up the right way and actually used.</p>
+        </div>
+        <div class="svc-card reveal">
+          <div class="svc-accent-line"></div>
+          <div class="svc-num">02</div>
+          <span class="svc-icon">🎯</span>
+          <h3>Lead Capture Systems</h3>
+          <p>Forms, landing pages, and intake flows that automatically route new leads into your pipeline — complete with instant notifications and follow-up sequences.</p>
+        </div>
+        <div class="svc-card reveal">
+          <div class="svc-accent-line"></div>
+          <div class="svc-num">03</div>
+          <span class="svc-icon">📅</span>
+          <h3>Scheduling & Booking Automation</h3>
+          <p>Kill the back-and-forth. Booking flows with automatic confirmations, reminders, and follow-ups so you never manually chase a no-show again.</p>
+        </div>
+        <div class="svc-card reveal">
+          <div class="svc-accent-line"></div>
+          <div class="svc-num">04</div>
+          <span class="svc-icon">💬</span>
+          <h3>Email & SMS Follow-Up Sequences</h3>
+          <p>Automated outreach that keeps your business top-of-mind after every inquiry, quote, or purchase — without you lifting a finger each time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ──────────────────────────────────── -->
+  <section class="how-section" id="how-it-works">
+    <div class="section-inner">
+      <div class="how-header reveal">
+        <div class="section-label">The Process</div>
+        <h2 class="how-headline">Simple. Practical. <em>Done.</em></h2>
+      </div>
+      <div class="steps-wrap">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <div class="step-title"><span>Discover</span></div>
+          <p>We talk about where your business is losing time and money. I ask the right questions to find out what's actually slowing you down — not what sounds fancy.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">02</div>
+          <div class="step-title"><span>Build</span></div>
+          <p>I set up the systems. No jargon, no unnecessary complexity. Just practical tools configured the right way for your specific business and how it actually runs.</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">03</div>
+          <div class="step-title"><span>Done</span></div>
+          <p>You hand things off. The systems run. You focus on the work that actually grows your business — not the admin that drains it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ─────────────────────────────────────────── -->
+  <section class="about-section" id="about">
+    <div class="section-inner">
+      <div class="about-grid">
+        <div class="about-photo reveal">
+          <!--
+            TO ADD YOUR PHOTO HERE TOO:
+            Replace the placeholder div with: <img src="your-photo.jpg" alt="Michael Green">
+          -->
+          <div class="photo-placeholder">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+            Your photo here
+          </div>
+        </div>
+        <div class="about-content reveal">
+          <div class="section-label">About</div>
+          <h2 class="about-name">Michael Green</h2>
+          <div class="about-role">Founder, Clockwork Ops</div>
+          <p>
+            <!-- REPLACE WITH YOUR BIO — 2-3 sentences about your background.
+                 What did you do before this? What makes you qualified?
+                 Why did you start doing this work? -->
+            [Your bio here — tell your story. Where did you come from, what did you do before,
+            and why do you care about helping small businesses run better?]
+          </p>
+          <p>
+            Most small business owners don't need more software — they need someone who can figure out
+            which tools actually solve their problem and set them up correctly.
+            That's what I do.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TESTIMONIALS ──────────────────────────────────── -->
+  <section class="testimonials-section">
+    <div class="section-inner">
+      <div class="testimonials-header reveal">
+        <div class="section-label">What Clients Say</div>
+        <h2 class="testimonials-headline">Results, not promises.</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testi-card reveal">
+          <div class="testi-mark">"</div>
+          <blockquote>
+            <!--
+              REPLACE WITH REAL QUOTE.
+              Even one real sentence from a real person is worth more than three polished fakes.
+            -->
+            [Client quote here — one or two sentences about the specific result they got
+            and what working with you was like.]
+          </blockquote>
+          <div class="testi-author">
+            <div class="testi-avatar"></div>
+            <div>
+              <div class="testi-name">[Client Name]</div>
+              <div class="testi-role">[Business Type]</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card reveal">
+          <div class="testi-mark">"</div>
+          <blockquote>
+            [Client quote here — one or two sentences about the specific result they got
+            and what working with you was like.]
+          </blockquote>
+          <div class="testi-author">
+            <div class="testi-avatar"></div>
+            <div>
+              <div class="testi-name">[Client Name]</div>
+              <div class="testi-role">[Business Type]</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card reveal">
+          <div class="testi-mark">"</div>
+          <blockquote>
+            [Client quote here — one or two sentences about the specific result they got
+            and what working with you was like.]
+          </blockquote>
+          <div class="testi-author">
+            <div class="testi-avatar"></div>
+            <div>
+              <div class="testi-name">[Client Name]</div>
+              <div class="testi-role">[Business Type]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FINAL CTA ─────────────────────────────────────── -->
+  <section class="cta-section" id="contact">
+    <div class="cta-glow"></div>
+    <div class="section-label reveal" style="display:block; margin-bottom:20px;">Book a Call</div>
+    <h2 class="cta-headline reveal">
+      Ready to run<br>like <em>clockwork?</em>
+    </h2>
+    <p class="cta-sub reveal">
+      Book a free 30-minute discovery call. We'll talk about your business,<br>
+      where you're losing time, and whether I can help.
+    </p>
+    <a href="YOUR_CALENDLY_LINK_HERE" class="btn btn-primary btn-lg reveal">
+      Book Your Free 30-Min Call →
+    </a>
+    <p class="cta-note reveal">30 minutes. No pitch. No commitment. Just a conversation.</p>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-logo">CLOCKWORK <span>OPS</span></div>
+    <p class="footer-copy">© 2026 Clockwork Ops. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      // Stagger siblings within the same parent
+      const siblings = [...el.parentElement.querySelectorAll('.reveal')];
+      const idx = siblings.indexOf(el);
+      el.style.transitionDelay = `${idx * 0.07}s`;
+      observer.observe(el);
+    });
+
+    // Subtle nav shadow on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.borderBottomColor = window.scrollY > 20
+        ? 'rgba(255,255,255,0.10)'
+        : 'rgba(255,255,255,0.06)';
+    }, { passive: true });
+  </script>
+</body>
+</html>
