@@ -7,6 +7,12 @@
     <link rel="icon" type="image/png" href="../favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://assets.calendly.com" crossorigin />
+    <link rel="preconnect" href="https://calendly.com" crossorigin />
+    <link rel="dns-prefetch" href="https://assets.calendly.com" />
+    <link rel="dns-prefetch" href="https://calendly.com" />
+    <link rel="preload" as="script" href="https://assets.calendly.com/assets/external/widget.js" />
+    <link rel="prefetch" as="document" href="https://calendly.com/michael-clockworkops/30min?hide_gdpr_banner=1&background_color=171d28&text_color=ededef&primary_color=f5a623" />
     <link
       href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap"
       rel="stylesheet"
@@ -302,6 +308,7 @@
           type="text/javascript"
           src="https://assets.calendly.com/assets/external/widget.js"
           async
+          fetchpriority="high"
         ></script>
       </div>
     </section>
